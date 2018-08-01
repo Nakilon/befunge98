@@ -1,0 +1,19 @@
+PATH
+  remote: .
+  specs:
+    befunge98 (0.0.0.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    minitest (5.11.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  befunge98!
+  minitest
+
+BUNDLED WITH
+   1.16.1
