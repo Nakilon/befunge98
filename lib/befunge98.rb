@@ -14,11 +14,12 @@ def Befunge98 source, out = StringIO.new
   go_north = ->{ dx, dy = 0, -1 }
   go_south = ->{ dx, dy = 0, 1 }
   move = lambda do
-    (px += dx; px %= code[py].size) if dx != 0
+    # TODO make a test about a potential when these lines were reversed?
     (py += dy; py %= code.size) if dy != 0
+    (px += dx; px %= code[py].size) if dx != 0
   end
 
-  quotes = false
+  stringmode = false
   iterate = 0
   jump_over = false
 
@@ -33,11 +34,11 @@ def Befunge98 source, out = StringIO.new
     next if jump_over && char != ?;
 
     p [stack, char] if ENV["DEBUG"]
-    next stack.push char.ord if quotes && char != ?"
+    next stack.push char.ord if stringmode && char != ?"
     next unless (32..126) === char.ord
     case char
       ### 93
-      when ?" ; quotes ^= true
+      when ?" ; stringmode ^= true
       when ?# ; move[]
       when ?> ; go_east[]
       when ?< ; go_west[]
@@ -63,7 +64,7 @@ def Befunge98 source, out = StringIO.new
       when ?! ; stack.push (pop[].zero? ? 1 : 0)
       when ?p
         y, x, v = pop[], pop[], pop[]
-        code[y] = [] unless code[y]
+        code[y] = "" unless code[y]
         code[y][x] = v.chr
       when ?g
         y, x = pop[], pop[]
@@ -75,9 +76,18 @@ def Befunge98 source, out = StringIO.new
       when ?@ ; return out, 0
       ### 98
       when ?q ; return out, pop[]
+      when ?a..?f ; stack.push char.ord - ?a.ord + 10
+      when ?'
+        move[]
+        stack.push ((code[y] || "")[x] || ?\s).ord
+      when ?s
+        move[]
+        code[py] = "" unless code[py]
+        code[py][px] = pop[].chr
       when ?; ; jump_over ^= true
       when ?] ; dy, dx = ds[(ds.index([dy, dx]) + 1) % ds.size]
       when ?[ ; dy, dx = ds[(ds.index([dy, dx]) - 1) % ds.size]
+      when ?w ; dy, dx = ds[(ds.index([dy, dx]) + (pop[] > pop[] ? -1 : 1)) % ds.size]
       when ?r ; dy, dx = [-dy, dx]
       when ?x ; dy, dx = [pop[], pop[]]
       when ?j

@@ -6,10 +6,13 @@ So let it be the first one.
 - [ ] ["Funge-98 Final Specification"](https://github.com/catseye/Funge-98/blob/master/doc/funge98.markdown)
   - [ ] operations
     - [x] `q`
+    - [x] `a`-`f`
+    - [x] `'`, `s`
     - [x] `;`
-    - [x] `]`, `[`, `r`, `x`
+    - [x] `]`, `[`, `w`, `r`, `x`
     - [x] `j`
     - [x] `k`
+    - [ ] `n`
     - [ ] `A`-`Z`
     - [ ] `t`
     - [ ] `=`
@@ -30,14 +33,17 @@ So let it be the first one.
       - [ ] `$`, `:`, `\`
       - [ ] `~`, `&`, `,`, `.`
       - [ ] `-`, `+`, `*`, `/`, `%`
-      - [ ] ```, `!`
+      - [ ] `````, `!`
       - [ ] `p`, `g`
     - [ ] Befunge-98
       - [x] `q`
+      - [ ] `a`-`f`
+      - [ ] `'`, `s`
       - [ ] `;`
-      - [ ] `]`, `[`, `r`, `x`
+      - [ ] `]`, `[`, `w`, `r`, `x`
       - [ ] `j`
       - [ ] `k`
+      - [ ] `n`
       - [ ] `A`-`Z`
       - [ ] `t`
       - [ ] `=`
@@ -48,9 +54,9 @@ So let it be the first one.
       - [ ] ...
   - [ ] bin
     - [x] Hello, World!
-    - [ ] failures, ^C, etc.
-- [ ] travis
+    - [ ] failures, ^C, hanging, etc.
+- [x] travis
 - [ ] gemify
 - [ ] announce
 
-[![Build Status](https://travis-ci.org/Nakilon/befunge98.png?)](https://travis-ci.org/Nakilon/befunge98) 
+[![Build Status](https://travis-ci.org/Nakilon/befunge98.png?)](https://travis-ci.org/Nakilon/befunge98)
