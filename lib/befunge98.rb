@@ -35,7 +35,7 @@ def Befunge98 source, out = StringIO.new
     next if jump_over && char != ?;
 
     p [stack, char] if ENV["DEBUG"]
-    next stack.push char.ord if stringmode && char != ?"
+    next stack << char.ord if stringmode && char != ?"
     next unless (32..126) === char.ord
     case char
       ### 93
@@ -48,33 +48,33 @@ def Befunge98 source, out = StringIO.new
       when ?? ; [go_east, go_west, go_north, go_south].sample[]
       when ?| ; pop[].zero? ? go_south[] : go_north[]
       when ?_ ; pop[].zero? ? go_east[] : go_west[]
-      when ?0..?9 ; stack.push char.to_i
+      when ?0..?9 ; stack << char.to_i
       when ?$ ; pop[]
       when ?: ; stack.concat [pop[]]*2
-      when ?\\ ; stack.push pop[], pop[]
-      when ?~ ; stack.push (STDIN.getc || 0).ord
+      when ?\\ ; stack << pop[] << pop[]
+      when ?~ ; stack << (STDIN.getc || 0).ord
       when ?&
-        stack.push STDIN.gets.to_i
+        stack << STDIN.gets.to_i
         # TODO: Decimal input reads and discards characters until it encounters decimal digit characters,
         #       at which point it reads a decimal number from those digits, up until (but not including)
         #       the point at which input characters stop being digits, or the point where
         #       the next digit would cause a cell overflow, whichever comes first.
       when ?, ; out.print pop[].chr
       when ?. ; out.print ("%d\x0a" % pop[])
-      when ?- ; stack.push -(pop[] - pop[])
-      when ?+ ; stack.push (pop[] + pop[])
-      when ?* ; stack.push (pop[] * pop[])
-      when ?/ ; stack.push ((_ = pop[]; pop[] / _))
-      when ?% ; stack.push ((_ = pop[]; pop[] % _))
-      when ?` ; stack.push (pop[] < pop[] ? 1 : 0)
-      when ?! ; stack.push (pop[].zero? ? 1 : 0)
+      when ?- ; stack << -(pop[] - pop[])
+      when ?+ ; stack << (pop[] + pop[])
+      when ?* ; stack << (pop[] * pop[])
+      when ?/ ; stack << ((_ = pop[]; pop[] / _))
+      when ?% ; stack << ((_ = pop[]; pop[] % _))
+      when ?` ; stack << (pop[] < pop[] ? 1 : 0)
+      when ?! ; stack << (pop[].zero? ? 1 : 0)
       when ?p
         y, x, v = pop[], pop[], pop[]
         code[oy + y] = "" unless code[y]
         code[oy + y][ox + x] = v.chr
       when ?g
         y, x = pop[], pop[]
-        stack.push ((code[oy + y] || "")[ox + x] || ?\s).ord
+        stack << ((code[oy + y] || "")[ox + x] || ?\s).ord
         # https://github.com/catseye/Funge-98/blob/master/doc/funge98.markdown
         # A Funge-98 program should also be able to rely on the memory mechanism acting as
         # if a cell contains blank space (ASCII 32) if it is unallocated, and setting memory
@@ -82,11 +82,11 @@ def Befunge98 source, out = StringIO.new
       when ?@ ; return out, 0
       ### 98
       when ?q ; return out, pop[]
-      when ?a..?f ; stack.push char.ord - ?a.ord + 10
+      when ?a..?f ; stack << char.ord - ?a.ord + 10
       when ?n ; stack.clear
       when ?'
         move[]
-        stack.push ((code[y] || "")[x] || ?\s).ord
+        stack << ((code[y] || "")[x] || ?\s).ord
       when ?s
         move[]
         code[py] = "" unless code[py]
@@ -112,7 +112,7 @@ def Befunge98 source, out = StringIO.new
           char = (code[py] || "")[px] || ?\s
         end until char != ?\s || char != ?;
       when ?{
-        # stacks.push toss = if 0 > n = pop[]
+        # stacks << toss = if 0 > n = pop[]
         #   Array.new(-n, 0)
         # else
         #   Array.new(n){ pop[] }
@@ -122,7 +122,7 @@ def Befunge98 source, out = StringIO.new
         stack << ox << oy
         ox = px + dx
         oy = py + dy
-        stacks.push stack = toss
+        stacks << stack = toss
       when ?{
         if 1 == stacks.size
           dy, dx = [-dy, dx]
@@ -137,9 +137,9 @@ def Befunge98 source, out = StringIO.new
         if 1 == stacks.size
           dy, dx = [-dy, dx]
         elsif 0 < n = pop[]
-          n.times{ stack.push stack[1].pop }
+          n.times{ stack << stack[1].pop }
         else
-          n.times{ stack[1].push pop[] }
+          n.times{ stack[1] << pop[] }
         end
     end
   end
