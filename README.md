@@ -5,22 +5,22 @@ So let it be the first one.
 - [x] memory size and code format edits
 - [ ] ["Funge-98 Final Specification"](https://github.com/catseye/Funge-98/blob/master/doc/funge98.markdown)
   - [ ] operations
-    - [x] `q`
-    - [x] `a`-`f`, `n`
-    - [x] `'`, `s`
-    - [x] `;`
-    - [x] `]`, `[`, `w`, `r`, `x`
-    - [x] `j`
-    - [x] `k`
-    - [x] `{`, `}`, `u`
-    - [ ] `A`-`Z`
-    - [ ] `t`
-    - [ ] `=`
-    - [ ] `i`
-    - [ ] `o`
-    - [ ] `y`
-    - [ ] `z`
-    - [ ] ...
+    - [x] `q` -- quit <exit code>
+    - [x] `a`-`f`, `n` -- push 10..15 onto stack, clear all stacks
+    - [x] `'`, `s` -- fetch and store a char
+    - [x] `;` -- comments
+    - [x] `]`, `[`, `w`, `r`, `x` -- change delta
+    - [x] `j` -- jump forward
+    - [x] `k` -- iterate
+    - [x] `{`, `}`, `u` -- push cells between TOSS and SOSS
+    - [x] `(`, `)` -- we don't implement semantics
+    - [ ] `y` -- what do 13th and 14th slots mean?
+    - [ ] `z` -- can we just skip it?
+  - [x] `y` specification allows us to skip these
+    - [x] (execute) `=`
+    - [x] (filesystem) `i`, `o`
+    - [x] (concurrent) `t`
+    - [x] (3D) `h`, `l`, `m`
 - [ ] tests
   - [ ] bin
     - [x] Hello, World!
@@ -47,13 +47,8 @@ So let it be the first one.
       - [ ] `j`
       - [ ] `k`
       - [ ] `{`, `}`, `u`
-      - [ ] `A`-`Z`
-      - [ ] `t`
-      - [ ] `=`
-      - [ ] `i`
-      - [ ] `o`
+      - [ ] `(`, `)`
       - [ ] `y`
-      - [ ] `z`
       - [ ] ...
 - [x] travis
 - [ ] gemify

@@ -141,6 +141,34 @@ def Befunge98 source, out = StringIO.new
         else
           n.times{ stack[1] << pop[] }
         end
+      when ?(, ?)
+        pop[].times.inject(0){ |i,| i*256 + pop[] }
+        reflect[]
+      when ?y
+        y = pop[]
+        ss = stack.size
+        stack << 0
+        stack << 255
+        stack << 0
+        stack << Gem.loaded_specs.values.find{ |_| _.lib_dirs_glob == File.absolute_path(__dir__) }.version.segments.join.to_i
+        stacK << 0
+        stack << File::SEPARATOR.ord
+        stack << 2
+        stack << 0
+        stack << 0
+        stack << py << px
+        stack << dy << dx
+        stack << oy << ox
+        stack << [0, 0] # TODO: 1 vector containing the least point which contains a non-space cell, relative to the origin (env)
+        stack << [0, 0] # TODO: 1 vector containing the greatest point which contains a non-space cell, relative to the least point (env)
+        t = Time.now
+        stack << (t.year - 1900) * 256 * 256 + t.month * 256 + t.day
+        stack << t.hour * 256 * 256 + t.min * 256 + t.sec
+        stack << stacks.size
+        stack.concat stacks.map &:size; stack[-1] = ss
+        stack.concat ARGV.map{ |_| _.chars.map(&:ord) + [0] } + [0]
+        stack.concat ENV.map{ |k, v| "#{k}=#{v}".chars.map(&:ord) + [0] } + [0]
+        stack << stack[1-y].tap{ stack = stack.take ss } if y > 0
     end
   end
 end
