@@ -23,25 +23,25 @@ describe "lib" do
         end
 
         it ?$ do
-          assert_equal [1], Befunge98('12$@').stack
+          assert_equal [1], Befunge98('$12$@').stack
         end
         it ?: do
-          assert_equal [1, 2, 2], Befunge98('12:@').stack
+          assert_equal [0, 0, 1, 1], Befunge98(':1:@').stack
         end
         it ?\ do
-          assert_equal [1, 3, 2], Befunge98('123\\@').stack
+          assert_equal [0, 1, 0], Befunge98('\\1\\@').stack
         end
         it ?# do
           assert_equal [1], Befunge98('#@1#').stack
         end
         it "><^v" do
           assert_equal [1, 2, 3, 4], Befunge98("<@^1\n"\
-                                               " v>3\n"\
+                                               "3v>\n"\
                                                "5425").stack
         end
         it ?? do
           t = []
-          1000.times do
+          100.times do
             t |= Befunge98("?1@2\n"\
                            "4555\n"\
                            "@555\n"\
@@ -50,6 +50,11 @@ describe "lib" do
           assert_equal [1, 2, 3, 4], t.uniq.sort
         end
       end
+    end
+
+    it "# test by @lifthrasiir" do
+      assert_equal "3 ", Befunge98("#;v           ; 1.@\n"\
+                                   "  ># ;2.@;3.@").stdout.string
     end
   end
 

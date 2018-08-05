@@ -15,7 +15,7 @@ def Befunge98 source, out = StringIO.new
   go_north = ->{ dx, dy = 0, -1 }
   go_south = ->{ dx, dy = 0, 1 }
   move = lambda do
-    # TODO make a test about a potential when these lines were reversed?
+    # TODO: Lahey-space wrapping
     (py += dy; py %= code.size) if dy != 0
     (px += dx; px %= code[py].size) if dx != 0
   end
@@ -42,9 +42,9 @@ def Befunge98 source, out = StringIO.new
       ### 93
       when ?" ; stringmode ^= true
       when ?0..?9 ; stack << char.to_i
-      when ?$ ; pop[]                        # TODO: ask if it is ok to discard from empty stack
-      when ?: ; stack.push stack.last        # TODO: ask if it really can pop zero from empty stack
-      when ?\\ ; stack.concat [pop[], pop[]] # TODO: ask if it really can pop zero from empty stack
+      when ?$ ; pop[]
+      when ?: ; stack.concat [pop[]]*2
+      when ?\\ ; stack.concat [pop[], pop[]]
       when ?# ; move[]
       when ?> ; go_east[]
       when ?< ; go_west[]
@@ -61,7 +61,7 @@ def Befunge98 source, out = StringIO.new
         end
         stack << cc.to_i
       when ?, ; out.print pop[].chr
-      when ?. ; out.print ("%d\x0a" % pop[])
+      when ?. ; out.print ("%d " % pop[])
       when ?- ; stack << -(pop[] - pop[])
       when ?+ ; stack << (pop[] + pop[])
       when ?* ; stack << (pop[] * pop[])
