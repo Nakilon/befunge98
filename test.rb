@@ -64,6 +64,19 @@ describe "lib" do
         it "-/" do
           assert_equal [-1, -2, -1, -2], Befunge98("1-2/02-1/102-/201-/@").stack
         end
+        it "|_" do ; skip
+          assert_equal [1, 3], Befunge98("  |\n"\
+                                         "41_13@\n"\
+                                         "42_23@").stack
+          assert_equal [2, 4], Befunge98("11|\n"\
+                                         "41_13@\n"\
+                                         "42_23@").stack
+        end
+        it "-|_" do
+          assert_equal [2, 4], Befunge98("1-01-|\n"\
+                                         "   41_13@\n"\
+                                         "   42_23@").stack
+        end
       end
     end
 
