@@ -51,6 +51,11 @@ def Befunge98 source, out = StringIO.new
       when ?^ ; go_north[]
       when ?v ; go_south[]
       when ?? ; [go_east, go_west, go_north, go_south].sample[]
+      when ?+ ; stack << (pop[] + pop[])
+      when ?- ; stack << -(pop[] - pop[])
+      when ?* ; stack << (pop[] * pop[])
+      when ?/ ; b, a = pop[], pop[]; stack << (b.zero? ? 0 : a / b)
+      when ?% ; b, a = pop[], pop[]; stack << (b.zero? ? 0 : a % b)
       when ?| ; pop[].zero? ? go_south[] : go_north[]
       when ?_ ; pop[].zero? ? go_east[] : go_west[]
       when ?~ ; stack << STDIN.getc.ord
@@ -62,11 +67,6 @@ def Befunge98 source, out = StringIO.new
         stack << cc.to_i
       when ?, ; out.print pop[].chr
       when ?. ; out.print ("%d " % pop[])
-      when ?- ; stack << -(pop[] - pop[])
-      when ?+ ; stack << (pop[] + pop[])
-      when ?* ; stack << (pop[] * pop[])
-      when ?/ ; b, a = pop[], pop[]; stack << (b.zero? ? 0 : a / b)
-      when ?% ; b, a = pop[], pop[]; stack << (b.zero? ? 0 : a % b)
       when ?` ; stack << (pop[] < pop[] ? 1 : 0)
       when ?! ; stack << (pop[].zero? ? 1 : 0)
       when ?p

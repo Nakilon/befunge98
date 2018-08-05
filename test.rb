@@ -49,6 +49,21 @@ describe "lib" do
           end
           assert_equal [1, 2, 3, 4], t.uniq.sort
         end
+        it ?+ do
+          assert_equal [90000], Befunge98("++"+"9+"*10000+"@").stack
+        end
+        it ?- do
+          assert_equal [-90000], Befunge98("--"+"9-"*10000+"@").stack
+        end
+        it ?* do
+          assert_equal [0, 2**31], Befunge98("**2*2"+"2*"*30+"@").stack
+        end
+        it ?/ do
+          assert_equal [0, 0, 1, 2], Befunge98("//12/22/21/@").stack
+        end
+        it "-/" do
+          assert_equal [-1, -2, -1, -2], Befunge98("1-2/02-1/102-/201-/@").stack
+        end
       end
     end
 
