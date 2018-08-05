@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Nakilon/befunge98.png?)](https://travis-ci.org/Nakilon/befunge98)
+
 There are a lot of Befunge-93 Ruby implementations in the wild but I don't see any Befunge-98.  
 So let it be the first one.
 
@@ -28,12 +30,12 @@ So let it be the first one.
   - [ ] operations
     - [ ] Befunge-93
       - [x] `@`
-      - [ ] `"`
-      - [ ] `#`
+      - [x] `"`
+      - [x] `0`..`9`
+      - [x] `$`, `:`, `\`
+      - [x] `#`
       - [ ] `>`, `<`, `^`, `v`, `?`
       - [ ] `|`, `_`
-      - [ ] `0`..`9`
-      - [ ] `$`, `:`, `\`
       - [ ] `~`, `&`, `,`, `.`
       - [ ] `-`, `+`, `*`, `/`, `%`
       - [ ] `` ` ``, `!`
@@ -54,4 +56,4 @@ So let it be the first one.
 - [ ] gemify
 - [ ] announce
 
-[![Build Status](https://travis-ci.org/Nakilon/befunge98.png?)](https://travis-ci.org/Nakilon/befunge98)
+This implementation in another language somewhat helped me: https://bitbucket.org/lifthrasiir/pyfunge/src/default/funge/languages/funge98.py

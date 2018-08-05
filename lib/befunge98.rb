@@ -41,6 +41,10 @@ def Befunge98 source, out = StringIO.new
     case char
       ### 93
       when ?" ; stringmode ^= true
+      when ?0..?9 ; stack << char.to_i
+      when ?$ ; pop[]                        # TODO: ask if it is ok to discard from empty stack
+      when ?: ; stack.push stack.last        # TODO: ask if it really can pop zero from empty stack
+      when ?\\ ; stack.concat [pop[], pop[]] # TODO: ask if it really can pop zero from empty stack
       when ?# ; move[]
       when ?> ; go_east[]
       when ?< ; go_west[]
@@ -49,10 +53,6 @@ def Befunge98 source, out = StringIO.new
       when ?? ; [go_east, go_west, go_north, go_south].sample[]
       when ?| ; pop[].zero? ? go_south[] : go_north[]
       when ?_ ; pop[].zero? ? go_east[] : go_west[]
-      when ?0..?9 ; stack << char.to_i
-      when ?$ ; pop[]
-      when ?: ; stack.concat [pop[]]*2
-      when ?\\ ; stack << pop[] << pop[]
       when ?~ ; stack << STDIN.getc.ord
       when ?&
         () until (?0..?9).include?(c = STDIN.getc)
@@ -80,9 +80,9 @@ def Befunge98 source, out = StringIO.new
         # A Funge-98 program should also be able to rely on the memory mechanism acting as
         # if a cell contains blank space (ASCII 32) if it is unallocated, and setting memory
         # to be full of blank space cells upon actual allocation (program load, or p instruction)
-      when ?@ ; return out, 0
+      when ?@ ; return out, stack, 0
       ### 98
-      when ?q ; return out, pop[]
+      when ?q ; return out, stack, pop[]
       when ?a..?f ; stack << char.ord - ?a.ord + 10
       when ?n ; stack.clear
       when ?'
