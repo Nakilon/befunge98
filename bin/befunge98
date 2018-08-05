@@ -6,5 +6,4 @@ end
 
   require "befunge98"
 
-  _, _, code = Befunge98(File.read(ARGV.first), STDOUT)
-  exit code
+  exit Befunge98(File.read(ARGV.first), STDOUT).exitcode

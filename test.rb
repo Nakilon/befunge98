@@ -10,36 +10,29 @@ describe "lib" do
   describe "Befunge93 operations" do
     describe "(rely on @)" do
       before do
-        _, _, exitcode = Befunge98(?@)
-        assert_equal 0, exitcode
+        assert_equal 0, Befunge98(?@).exitcode
       end
 
       it ?" do
-        _, stack, _ = Befunge98('"@')
-        assert_equal [?@.ord], stack
+        assert_equal [?@.ord], Befunge98('"@').stack
       end
 
       describe "(rely on 0..9)" do
         before do
-          _, stack, _ = Befunge98('0123456789@')
-          assert_equal (0..9).to_a, stack
+          assert_equal (0..9).to_a, Befunge98('0123456789@').stack
         end
 
         it "1 2 $" do
-          _, stack, _ = Befunge98('12$@')
-          assert_equal [1], stack
+          assert_equal [1], Befunge98('12$@').stack
         end
         it "1 2 :" do
-          _, stack, _ = Befunge98('12:@')
-          assert_equal [1, 2, 2], stack
+          assert_equal [1, 2, 2], Befunge98('12:@').stack
         end
         it "1 2 3 \\" do
-          _, stack, _ = Befunge98('123\\@')
-          assert_equal [1, 3, 2], stack
+          assert_equal [1, 3, 2], Befunge98('123\\@').stack
         end
         it "1 #" do
-          _, stack, _ = Befunge98('#@1#')
-          assert_equal [1], stack
+          assert_equal [1], Befunge98('#@1#').stack
         end
       end
     end
@@ -47,10 +40,8 @@ describe "lib" do
 
   describe "Befunge98 operations" do
     it ?q do
-      _, _, exitcode = Befunge98(?q)
-      assert_equal 0, exitcode
-      _, _, exitcode = Befunge98("1q")
-      assert_equal 1, exitcode
+      assert_equal 0, Befunge98(?q).exitcode
+      assert_equal 1, Befunge98("1q").exitcode
     end
   end
 

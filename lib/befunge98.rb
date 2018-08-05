@@ -80,9 +80,9 @@ def Befunge98 source, out = StringIO.new
         # A Funge-98 program should also be able to rely on the memory mechanism acting as
         # if a cell contains blank space (ASCII 32) if it is unallocated, and setting memory
         # to be full of blank space cells upon actual allocation (program load, or p instruction)
-      when ?@ ; return out, stack, 0
+      when ?@ ; return Struct.new(:stdout, :stack, :exitcode).new(out, stack, 0)
       ### 98
-      when ?q ; return out, stack, pop[]
+      when ?q ; return Struct.new(:stdout, :stack, :exitcode).new(out, stack, pop[])
       when ?a..?f ; stack << char.ord - ?a.ord + 10
       when ?n ; stack.clear
       when ?'
