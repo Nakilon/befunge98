@@ -36,7 +36,8 @@ def Befunge98 source, out = StringIO.new
 
     p [stack, char] if ENV["DEBUG"]
     next stack << char.ord if stringmode && char != ?"
-    next unless (32..126) === char.ord
+    next unless (32..126).include? char.ord
+    reflect = ->{ dy, dx = [-dy, dx] }
     case char
       ### 93
       when ?" ; stringmode ^= true
@@ -52,20 +53,20 @@ def Befunge98 source, out = StringIO.new
       when ?$ ; pop[]
       when ?: ; stack.concat [pop[]]*2
       when ?\\ ; stack << pop[] << pop[]
-      when ?~ ; stack << (STDIN.getc || 0).ord
+      when ?~ ; stack << STDIN.getc.ord
       when ?&
-        stack << STDIN.gets.to_i
-        # TODO: Decimal input reads and discards characters until it encounters decimal digit characters,
-        #       at which point it reads a decimal number from those digits, up until (but not including)
-        #       the point at which input characters stop being digits, or the point where
-        #       the next digit would cause a cell overflow, whichever comes first.
+        () until (?0..?9).include?(c = STDIN.getc)
+        while (?0..?9).include?(cc = STDIN.getc)
+          c.concat cc
+        end
+        stack << cc.to_i
       when ?, ; out.print pop[].chr
       when ?. ; out.print ("%d\x0a" % pop[])
       when ?- ; stack << -(pop[] - pop[])
       when ?+ ; stack << (pop[] + pop[])
       when ?* ; stack << (pop[] * pop[])
-      when ?/ ; stack << ((_ = pop[]; pop[] / _))
-      when ?% ; stack << ((_ = pop[]; pop[] % _))
+      when ?/ ; b, a = pop[], pop[]; stack << (b.zero? ? 0 : a / b)
+      when ?% ; b, a = pop[], pop[]; stack << (b.zero? ? 0 : a % b)
       when ?` ; stack << (pop[] < pop[] ? 1 : 0)
       when ?! ; stack << (pop[].zero? ? 1 : 0)
       when ?p
@@ -89,21 +90,22 @@ def Befunge98 source, out = StringIO.new
         stack << ((code[y] || "")[x] || ?\s).ord
       when ?s
         move[]
-        code[py] = "" unless code[py]
+        code[py] = "" unless code[py]   # do we really need this?
+        code[py] = code[py].ljust px + 1
         code[py][px] = pop[].chr
       when ?; ; jump_over ^= true
       when ?] ; dy, dx = ds[(ds.index([dy, dx]) + 1) % ds.size]
       when ?[ ; dy, dx = ds[(ds.index([dy, dx]) - 1) % ds.size]
       when ?w ; dy, dx = ds[(ds.index([dy, dx]) + (pop[] > pop[] ? -1 : 1)) % ds.size]
-      when ?r ; dy, dx = [-dy, dx]
-      when ?x ; dy, dx = [pop[], pop[]]
+      when ?r ; reflect[]
+      when ?x ; dy, dx = [pop[], pop[]] # ask if |delta|>1 is possible
       when ?j
         if 0 < t = pop[]
           t.times{ move[] }
         else
-          dy, dx = [-dy, dx]
+          reflect[]
           t.times{ move[] }
-          dy, dx = [-dy, dx]
+          reflect[]
         end
       when ?k
         iterate = pop[]
@@ -125,7 +127,7 @@ def Befunge98 source, out = StringIO.new
         stacks << stack = toss
       when ?{
         if 1 == stacks.size
-          dy, dx = [-dy, dx]
+          reflect[]
         else
           toss = stack
           t = (0 < n = pop[]) ? stack.last(n) : []
@@ -135,7 +137,7 @@ def Befunge98 source, out = StringIO.new
         end
       when ?u
         if 1 == stacks.size
-          dy, dx = [-dy, dx]
+          reflect[]
         elsif 0 < n = pop[]
           n.times{ stack << stack[1].pop }
         else
