@@ -41,7 +41,7 @@ describe "lib" do
         end
         it ?? do
           t = []
-          100.times do
+          100000.times do
             t |= Befunge98("?1@2\n"\
                            "4555\n"\
                            "@555\n"\
