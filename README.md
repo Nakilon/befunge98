@@ -6,13 +6,13 @@ So let it be the first one.
 - [ ] ["Funge-98 Final Specification"](https://github.com/catseye/Funge-98/blob/master/doc/funge98.markdown)
   - [ ] operations
     - [x] `q`
-    - [x] `a`-`f`
+    - [x] `a`-`f`, `n`
     - [x] `'`, `s`
     - [x] `;`
     - [x] `]`, `[`, `w`, `r`, `x`
     - [x] `j`
     - [x] `k`
-    - [ ] `n`
+    - [x] `{`, `}`, `u`
     - [ ] `A`-`Z`
     - [ ] `t`
     - [ ] `=`
@@ -22,6 +22,9 @@ So let it be the first one.
     - [ ] `z`
     - [ ] ...
 - [ ] tests
+  - [ ] bin
+    - [x] Hello, World!
+    - [ ] failures, ^C, hanging, etc.
   - [ ] operations
     - [ ] Befunge-93
       - [x] `@`
@@ -33,17 +36,17 @@ So let it be the first one.
       - [ ] `$`, `:`, `\`
       - [ ] `~`, `&`, `,`, `.`
       - [ ] `-`, `+`, `*`, `/`, `%`
-      - [ ] `````, `!`
+      - [ ] `` ` ``, `!`
       - [ ] `p`, `g`
     - [ ] Befunge-98
       - [x] `q`
-      - [ ] `a`-`f`
+      - [ ] `a`-`f`, `n`
       - [ ] `'`, `s`
       - [ ] `;`
       - [ ] `]`, `[`, `w`, `r`, `x`
       - [ ] `j`
       - [ ] `k`
-      - [ ] `n`
+      - [ ] `{`, `}`, `u`
       - [ ] `A`-`Z`
       - [ ] `t`
       - [ ] `=`
@@ -52,9 +55,6 @@ So let it be the first one.
       - [ ] `y`
       - [ ] `z`
       - [ ] ...
-  - [ ] bin
-    - [x] Hello, World!
-    - [ ] failures, ^C, hanging, etc.
 - [x] travis
 - [ ] gemify
 - [ ] announce
