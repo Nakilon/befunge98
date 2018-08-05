@@ -22,17 +22,32 @@ describe "lib" do
           assert_equal (0..9).to_a, Befunge98('0123456789@').stack
         end
 
-        it "1 2 $" do
+        it ?$ do
           assert_equal [1], Befunge98('12$@').stack
         end
-        it "1 2 :" do
+        it ?: do
           assert_equal [1, 2, 2], Befunge98('12:@').stack
         end
-        it "1 2 3 \\" do
+        it ?\ do
           assert_equal [1, 3, 2], Befunge98('123\\@').stack
         end
-        it "1 #" do
+        it ?# do
           assert_equal [1], Befunge98('#@1#').stack
+        end
+        it "><^v" do
+          assert_equal [1, 2, 3, 4], Befunge98("<@^1\n"\
+                                               " v>3\n"\
+                                               "5425").stack
+        end
+        it ?? do
+          t = []
+          1000.times do
+            t |= Befunge98("?1@2\n"\
+                           "4555\n"\
+                           "@555\n"\
+                           "3555").stack
+          end
+          assert_equal [1, 2, 3, 4], t.uniq.sort
         end
       end
     end
