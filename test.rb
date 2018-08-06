@@ -16,6 +16,20 @@ describe "lib" do
       it ?" do
         assert_equal [?@.ord], Befunge98('"@').stack
       end
+      it ?~ do
+        stdin = StringIO.new
+        stdin.set_encoding "ascii"
+        stdin.print "\0\x0a\xff"
+        stdin.rewind
+        assert_equal [0, 10, 255], Befunge98("~~~@", StringIO.new, stdin).stack
+      end
+      it ?& do
+        stdin = StringIO.new
+        stdin.set_encoding "ascii"
+        stdin.puts "-12345\n\n67890"
+        stdin.rewind
+        assert_equal [12345, 67890], Befunge98("&&@", StringIO.new, stdin).stack
+      end
 
       describe "(rely on 0..9)" do
         before do
@@ -76,6 +90,16 @@ describe "lib" do
           assert_equal [2, 4], Befunge98("1-01-|\n"\
                                          "   41_13@\n"\
                                          "   42_23@").stack
+        end
+        it ?~ do
+          stdin = StringIO.new
+          stdin.set_encoding "ascii"
+          assert_equal [2], Befunge98("~1@2", StringIO.new, stdin).stack
+        end
+        it ?& do
+          stdin = StringIO.new
+          stdin.set_encoding "ascii"
+          assert_equal [2], Befunge98("&1@2", StringIO.new, stdin).stack
         end
       end
     end

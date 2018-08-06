@@ -1,6 +1,6 @@
 STDOUT.sync = true
 
-def Befunge98 source, out = StringIO.new
+def Befunge98 source, stdout = StringIO.new, stdin = STDIN
   code = source.split ?\n
 
   stacks = [stack = []]
@@ -37,13 +37,13 @@ def Befunge98 source, out = StringIO.new
     p [stack, char] if ENV["DEBUG"]
     next stack << char.ord if stringmode && char != ?"
     next unless (32..126).include? char.ord
-    reflect = ->{ dy, dx = [-dy, dx] }
+    reflect = ->{ dy, dx = [-dy, -dx] }
     case char
       ### 93
       when ?" ; stringmode ^= true
       when ?0..?9 ; stack << char.to_i
       when ?$ ; pop[]
-      when ?: ; stack.concat [pop[]]*2
+      when ?: ; stack.concat [pop[]] * 2
       when ?\\ ; stack.concat [pop[], pop[]]
       when ?# ; move[]
       when ?> ; go_east[]
@@ -58,15 +58,33 @@ def Befunge98 source, out = StringIO.new
       when ?% ; b, a = pop[], pop[]; stack << (b.zero? ? 0 : a % b)
       when ?| ; pop[].zero? ? go_south[] : go_north[]
       when ?_ ; pop[].zero? ? go_east[] : go_west[]
-      when ?~ ; stack << STDIN.getc.ord
-      when ?&
-        () until (?0..?9).include?(c = STDIN.getc)
-        while (?0..?9).include?(cc = STDIN.getc)
-          c.concat cc
+      when ?~
+        if c = stdin.getc
+          stack << c.bytes.tap{ |_| _.size == 1 or fail }.first
+        else
+          reflect[]
         end
-        stack << cc.to_i
-      when ?, ; out.print pop[].chr
-      when ?. ; out.print ("%d " % pop[])
+      when ?&
+        catch nil do
+          begin
+            unless c = stdin.getc
+              reflect[]
+              throw nil
+            end
+          end until (?0..?9).include?(c)
+          while (
+            unless cc = stdin.getc
+              reflect[]
+              throw nil
+            end
+            (?0..?9).include? cc
+          )
+            c.concat cc
+          end
+          stack << c.to_i
+        end
+      when ?, ; stdout.print pop[].chr
+      when ?. ; stdout.print ("%d " % pop[])
       when ?` ; stack << (pop[] < pop[] ? 1 : 0)
       when ?! ; stack << (pop[].zero? ? 1 : 0)
       when ?p
@@ -80,9 +98,9 @@ def Befunge98 source, out = StringIO.new
         # A Funge-98 program should also be able to rely on the memory mechanism acting as
         # if a cell contains blank space (ASCII 32) if it is unallocated, and setting memory
         # to be full of blank space cells upon actual allocation (program load, or p instruction)
-      when ?@ ; return Struct.new(:stdout, :stack, :exitcode).new(out, stack, 0)
+      when ?@ ; return Struct.new(:stdout, :stack, :exitcode).new(stdout, stack, 0)
       ### 98
-      when ?q ; return Struct.new(:stdout, :stack, :exitcode).new(out, stack, pop[])
+      when ?q ; return Struct.new(:stdout, :stack, :exitcode).new(stdout, stack, pop[])
       when ?a..?f ; stack << char.ord - ?a.ord + 10
       when ?n ; stack.clear
       when ?'
