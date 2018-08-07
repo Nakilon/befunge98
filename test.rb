@@ -101,6 +101,12 @@ describe "lib" do
           stdin.set_encoding "ascii"
           assert_equal [2], Befunge98("&1@2", StringIO.new, stdin).stack
         end
+        it "5+," do
+          assert_equal [0, 10, 255, 0], Befunge98(",55+,5"+"5+"*50+",,@").stdout.string.bytes
+        end
+        it "5+." do
+          assert_equal "0 10 255 0 ", Befunge98(".55+.5"+"5+"*50+"..@").stdout.string
+        end
       end
     end
 

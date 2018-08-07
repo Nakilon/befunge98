@@ -83,7 +83,7 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
           end
           stack << c.to_i
         end
-      when ?, ; stdout.print pop[].chr
+      when ?, ; stdout.print pop[].chr            # ask about cells larger than byte
       when ?. ; stdout.print ("%d " % pop[])
       when ?` ; stack << (pop[] < pop[] ? 1 : 0)
       when ?! ; stack << (pop[].zero? ? 1 : 0)
