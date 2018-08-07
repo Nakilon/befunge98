@@ -93,19 +93,34 @@ describe "lib" do
         end
         it ?~ do
           stdin = StringIO.new
-          stdin.set_encoding "ascii"
           assert_equal [2], Befunge98("~1@2", StringIO.new, stdin).stack
+          stdin.print [0, 10, 255, 0].pack "C*"
+          stdin.rewind
+          assert_equal [0, 10, 255, 0], Befunge98("~~~~@", StringIO.new, stdin).stack
         end
         it ?& do
           stdin = StringIO.new
-          stdin.set_encoding "ascii"
           assert_equal [2], Befunge98("&1@2", StringIO.new, stdin).stack
+          [0, 10, 255].each do |c|
+            stdin.print [c, ?1.ord, ?2.ord, c, ?3.ord, ?4.ord, c].pack "C*"
+            stdin.rewind
+            assert_equal [12, 34], Befunge98("&&@", StringIO.new, stdin).stack
+          end
         end
         it "5+," do
           assert_equal [0, 10, 255, 0], Befunge98(",55+,5"+"5+"*50+",,@").stdout.string.bytes
         end
         it "5+." do
           assert_equal "0 10 255 0 ", Befunge98(".55+.5"+"5+"*50+"..@").stdout.string
+        end
+        it ?! do
+          assert_equal [1, 1, 0, 0], Befunge98("!0!1!2!@").stack
+        end
+        it "-!" do
+          assert_equal [0, 0], Befunge98("1-!02-!@").stack
+        end
+        it ?` do
+          assert_equal [0, 0, 1], Befunge98("`01`10`@").stack
         end
       end
     end

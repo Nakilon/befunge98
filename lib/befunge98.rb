@@ -85,8 +85,8 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         end
       when ?, ; stdout.print pop[].chr            # ask about cells larger than byte
       when ?. ; stdout.print ("%d " % pop[])
-      when ?` ; stack << (pop[] < pop[] ? 1 : 0)
       when ?! ; stack << (pop[].zero? ? 1 : 0)
+      when ?` ; stack << (pop[]<pop[] ? 1 : 0)
       when ?p
         y, x, v = pop[], pop[], pop[]
         code[oy + y] = "" unless code[y]
