@@ -55,7 +55,7 @@ describe "lib" do
         end
         it ?? do
           t = []
-          100000.times do
+          100.times do
             t |= Befunge98("?1@2\n"\
                            "4555\n"\
                            "@555\n"\
@@ -78,11 +78,17 @@ describe "lib" do
         it "-/" do
           assert_equal [-1, -2, -1, -2], Befunge98("1-2/02-1/102-/201-/@").stack
         end
-        it "|_" do ; skip
+        it "|_" do
           assert_equal [1, 3], Befunge98("  |\n"\
                                          "41_13@\n"\
                                          "42_23@").stack
           assert_equal [2, 4], Befunge98("11|\n"\
+                                         "41_13@\n"\
+                                         "42_23@").stack
+          assert_equal [2, 3], Befunge98("01|\n"\
+                                         "41_13@\n"\
+                                         "42_23@").stack
+          assert_equal [1, 4], Befunge98("10|\n"\
                                          "41_13@\n"\
                                          "42_23@").stack
         end

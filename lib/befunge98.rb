@@ -7,16 +7,16 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
   pop = ->{ stack.pop || 0 }
 
   ox = oy = 0
-  ds = [[0,1], [1,0], [-0,1], [-1,0]]
   dx, dy = 1, 0
   px, py = -1, 0
-  go_west = ->{ dx, dy = -1, 0 }
-  go_east = ->{ dx, dy = 1, 0 }
-  go_north = ->{ dx, dy = 0, -1 }
-  go_south = ->{ dx, dy = 0, 1 }
+  ds = [[0,1], [1,0], [0,-1], [-1,0]]
+  go_west = ->{ dx, dy = *ds[3] }
+  go_east = ->{ dx, dy = *ds[1] }
+  go_north = ->{ dx, dy = *ds[2] }
+  go_south = ->{ dx, dy = *ds[0] }
   move = lambda do
     # TODO: Lahey-space wrapping
-    (py += dy; py %= code.size) if dy != 0
+    (py += dy; py %= code.    size) if dy != 0
     (px += dx; px %= code[py].size) if dx != 0
   end
 
@@ -35,9 +35,9 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
     next if jump_over && char != ?;
 
     p [stack, char] if ENV["DEBUG"]
+    reflect = ->{ dy, dx = [-dy, -dx] }
     next stack << char.ord if stringmode && char != ?"
     next unless (32..126).include? char.ord
-    reflect = ->{ dy, dx = [-dy, -dx] }
     case char
       ### 93
       when ?" ; stringmode ^= true
@@ -87,10 +87,6 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
       when ?. ; stdout.print ("%d " % pop[])
       when ?! ; stack << (pop[].zero? ? 1 : 0)
       when ?` ; stack << (pop[]<pop[] ? 1 : 0)
-      when ?p
-        y, x, v = pop[], pop[], pop[]
-        code[oy + y] = "" unless code[y]
-        code[oy + y][ox + x] = v.chr
       when ?g
         y, x = pop[], pop[]
         stack << ((code[oy + y] || "")[ox + x] || ?\s).ord
@@ -98,6 +94,10 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         # A Funge-98 program should also be able to rely on the memory mechanism acting as
         # if a cell contains blank space (ASCII 32) if it is unallocated, and setting memory
         # to be full of blank space cells upon actual allocation (program load, or p instruction)
+      when ?p
+        y, x, v = pop[], pop[], pop[]
+        code[oy + y] = "" unless code[y]
+        code[oy + y][ox + x] = v.chr
       when ?@ ; return Struct.new(:stdout, :stack, :exitcode).new(stdout, stack, 0)
       ### 98
       when ?q ; return Struct.new(:stdout, :stack, :exitcode).new(stdout, stack, pop[])
@@ -161,6 +161,25 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         else
           n.times{ stack[1] << pop[] }
         end
+      when ?i
+        f = pop[]
+        y, x = pop[], pop[]
+        stack.push # ???
+      when ?o
+        s = ""
+        until c = pop[].zero?
+          s.concat c.to_s
+        end
+        f = pop[]
+        y, x = pop[], pop[]
+        h, w = pop[], pop[]
+      when ?=
+        system "".tap{ |s|
+          until c = pop[].zero?
+            s.concat c.to_s
+          end
+        }, %i{ out err } => "/dev/null"
+        stack << $?.exitstatus
       when ?(, ?)
         pop[].times.inject(0){ |i,| i*256 + pop[] }
         reflect[]
