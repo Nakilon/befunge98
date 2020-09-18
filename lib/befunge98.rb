@@ -20,8 +20,8 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
     next if sy + oy + y >= 0 && code[sy + oy + y] && sx + ox + x >= 0 && code[sy + oy + y][sx + ox + x]
     top    = code. index{ |l| !(l - [32, nil]).empty? }
     bottom = code.rindex{ |l| !(l - [32, nil]).empty? }
-    left  = code.map{ |l| l. index{ |c| c && c != 32 } }.compact.min
-    right = code.map{ |l| l.rindex{ |c| c && c != 32 } }.compact.max
+    left  = code.map{ |l| l && l. index{ |c| c && c != 32 } }.compact.min
+    right = code.map{ |l| l && l.rindex{ |c| c && c != 32 } }.compact.max
     STDERR.puts [top..bottom, left..right, [y, x], [dy, dx], code].inspect if ENV["DEBUG"]
     ty, tx = y, x
     next if loop do
