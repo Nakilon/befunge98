@@ -79,16 +79,11 @@ describe "lib" do
                                          "   41_13@\n"\
                                          "   42_23@").stack
         end
-        describe "(rely on +)" do
-          before do
-            assert_equal [3], Befunge98("12+@").stack
-          end
-          it "," do
-            assert_equal "\x00\x0A\xFF\x00".b, Befunge98(",55+,5"+"5+"*50+",,@").stdout.string
-          end
-          it "." do
-            assert_equal "0 10 255 0 ",        Befunge98(".55+.5"+"5+"*50+"..@").stdout.string
-          end
+        it ", with +" do
+          assert_equal "\x00\x0A\xFF\x00".b, Befunge98(",55+,5"+"5+"*50+",,@").stdout.string
+        end
+        it ". with +" do
+          assert_equal "0 10 255 0 ",        Befunge98(".55+.5"+"5+"*50+"..@").stdout.string
         end
         it "!" do
           assert_equal [1, 1, 0, 0], Befunge98("!0!1!2!@").stack
@@ -98,6 +93,9 @@ describe "lib" do
         end
         it "`" do
           assert_equal [0, 0, 1], Befunge98("`01`10`@").stack
+        end
+        it "pg with -" do
+          assert_equal [3, 4], Befunge98("302-01-p401-02-p02-01-g01-02-g@").stack
         end
       end
     end

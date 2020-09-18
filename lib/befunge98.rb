@@ -95,20 +95,19 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
       # if a cell contains blank space (ASCII 32) if it is unallocated, and setting memory
       # to be full of blank space cells upon actual allocation (program load, or p instruction)
       when ?g
-        y, x = pop[], pop[]
-        stack << get[]
+        y, x = [y, x].tap{ y, x = pop[], pop[]; stack << get[] }
       when ?p
-        y, x, v = pop[], pop[], pop[]
-        if 0 > (d = sy + oy + y)
-          sy -= d
-          code = Array.new(d, []) + code
-        end
-        if 0 > (d = sx + ox + x)
+        py, px, v = pop[], pop[], pop[]
+        if 0 > (d = sx + ox + px)
           sx -= d
-          code.map!{ |l| Array.new(d, 32) + l }
+          code.map!{ |l| Array.new(-d, 32) + l }
         end
-        code[sy + oy + y] ||= []
-        code[sy + oy + y][sx + ox + x] = v
+        if 0 > (d = sy + oy + py)
+          sy -= d
+          code = Array.new(-d, []) + code
+        end
+        code[sy + oy + py] ||= []
+        code[sy + oy + py][sx + ox + px] = v
       when ?@ ; return Struct.new(:stdout, :stack, :exitcode).new(stdout, stack, 0)
 
       ### 98

@@ -4,6 +4,6 @@ Signal.trap :INT do
   abort "\n(interrupted by SIGINT)"
 end
 
-  require "befunge98"
+  require_relative "../lib/befunge98"
 
   exit Befunge98(File.read(ARGV.first), STDOUT).exitcode
