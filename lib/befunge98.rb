@@ -1,10 +1,12 @@
+Encoding::default_internal = Encoding::default_external = "ASCII-8BIT"
+
 def Befunge98 source, stdout = StringIO.new, stdin = STDIN
-  code = source.split(?\n).map(&:bytes)
+  code = source.tap{ |_| fail "empty source" if _.empty? }.split(?\n).map(&:bytes)
 
   stacks = [stack = []]
   pop = ->{ stack.pop || 0 }
 
-  ox = oy = 0
+  sx = sy = ox = oy = 0
   dx, dy = 1, 0
   x, y = -1, 0
   ds = [[0,1], [1,0], [0,-1], [-1,0]]
@@ -14,15 +16,34 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
   go_south = ->{ dx, dy = *ds[0] }
   reflect = ->{ dy, dx = [-dy, -dx] }
   move = lambda do
-    # TODO: Lahey-space wrapping
-    (y += dy; y %= code.   size) if dy != 0
-    (x += dx; x %= code[y].size) if dx != 0
+    y, x = y + dy, x + dx
+    next if sy + oy + y >= 0 && code[sy + oy + y] && sx + ox + x >= 0 && code[sy + oy + y][sx + ox + x]
+    top    = code. index{ |l| !(l - [32, nil]).empty? }
+    bottom = code.rindex{ |l| !(l - [32, nil]).empty? }
+    left  = code.map{ |l| l. index{ |c| c && c != 32 } }.compact.min
+    right = code.map{ |l| l.rindex{ |c| c && c != 32 } }.compact.max
+    STDERR.puts [code, top..bottom, left..right, [y, x], [dy, dx]].inspect if ENV["DEBUG"]
+    ty, tx = y, x
+    next if loop do
+      zy, zx = sy + oy + ty, sx + ox + tx
+      break unless (top..bottom).include?(zy) && (left..right).include?(zx)
+      break true if code[zy] && code[zy][zx] && code[zy][zx] != 32
+      ty, tx = ty + dy, tx + dx
+    end
+    ty, tx = y - dy, x - dx
+    loop do
+      STDERR.puts [ty, tx].inspect if ENV["DEBUG"]
+      zy, zx = sy + oy + ty, sx + ox + tx
+      break unless (top..bottom).include?(zy) && (left..right).include?(zx)
+      y, x = ty, tx if code[zy] && code[zy][zx] && code[zy][zx] != 32
+      ty, tx = ty - dy, tx - dx
+    end
   end
 
   stringmode = jump_over = false
   iterate = 0
 
-  get = ->{ (code[y + oy] || [])[x + ox] || 32 }
+  get = ->{ (code[sy + oy + y] || [])[sx + ox + x] || 32 }
   loop do
     if iterate.zero?
       move[]
@@ -30,6 +51,7 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
     else
       iterate -= 1
     end
+    STDERR.puts [[y, x], char.chr, stack].inspect if ENV["DEBUG"]
 
     next stack << char if stringmode && char.chr != ?"
     next unless (33..126).include? char
@@ -56,12 +78,12 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
       when ?% ; b, a = pop[], pop[]; stack << (b.zero? ? 0 : a % b)
       when ?| ; pop[].zero? ? go_south[] : go_north[]
       when ?_ ; pop[].zero? ? go_east[] : go_west[]
-      when ?~ ; if c = stdin.getc then stack << c.ord else reflect[] end
+      when ?~ ; if c = stdin.getbyte then stack << c else reflect[] end
       when ?&
-        getc = ->{ stdin.getc or (reflect[]; throw) }
-        catch do
-          nil until (?0..?9).include?(c = getc[])
-          c << cc while (?0..?9).include?(cc = gets[])
+        getc = ->{ stdin.getc or (reflect[]; throw nil) }
+        catch nil do
+          nil until (?0..?9).include? c = getc[]
+          while (?0..?9).include? cc = getc[] ; c << cc end
           stack << c.to_i
         end
       when ?, ; stdout.print pop[].chr
@@ -77,8 +99,16 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         stack << get[]
       when ?p
         y, x, v = pop[], pop[], pop[]
-        code[oy + y] ||= []
-        code[oy + y][ox + x] = v
+        if 0 > (d = sy + oy + y)
+          sy -= d
+          code = Array.new(d, []) + code
+        end
+        if 0 > (d = sx + ox + x)
+          sx -= d
+          code.map!{ |l| Array.new(d, 32) + l }
+        end
+        code[sy + oy + y] ||= []
+        code[sy + oy + y][sx + ox + x] = v
       when ?@ ; return Struct.new(:stdout, :stack, :exitcode).new(stdout, stack, 0)
 
       ### 98
@@ -90,8 +120,8 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         stack << get[]
       when ?s
         move[]
-        code[y + oy] ||= []
-        code[y + oy][x + ox] = pop[]
+        code[sy + oy + y] ||= []
+        code[sy + oy + y][sx + ox + x] = pop[]
       when ?[ ; dy, dx = ds[(ds.index([dy, dx]) - 1) % 4]
       when ?] ; dy, dx = ds[(ds.index([dy, dx]) + 1) % 4]
       when ?w ; dy, dx = ds[(ds.index([dy, dx]) + (pop[] > pop[] ? -1 : 1)) % 4]

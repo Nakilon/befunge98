@@ -8,7 +8,8 @@ So let it be the first one.
 - [ ] Befunge-98 (["Funge-98 Final Specification"](https://github.com/catseye/Funge-98/blob/master/doc/funge98.markdown))
   - [ ] operations
     - [x] `q` -- quit <exit code>
-    - [x] `a`-`f`, `n` -- push 10..15 onto stack, clear all stacks
+    - [x] `a`-`f` -- push 10..15 onto stack
+    - [x] `n` -- clear all stacks
     - [x] `'`, `s` -- fetch and store a char
     - [x] `;` -- comments
     - [x] `]`, `[`, `w`, `r`, `x` -- change delta
@@ -42,7 +43,8 @@ So let it be the first one.
       - [ ] `p`, `g`
     - [ ] Befunge-98
       - [x] `q`
-      - [ ] `a`-`f`, `n`
+      - [x] `a`-`f`
+      - [ ] `n`
       - [ ] `'`, `s`
       - [ ] `;`
       - [ ] `]`, `[`, `w`, `r`, `x`
