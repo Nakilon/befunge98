@@ -3,9 +3,9 @@
 There are a lot of Befunge-93 Ruby implementations in the wild but I don't see any Befunge-98.  
 So let it be the first one.
 
-- [x] Befunge-93 operations
+- [x] Befunge-93 (["Befunge-93 Documentation"](https://github.com/catseye/Befunge-93/blob/master/doc/Befunge-93.markdown))
 - [x] memory size and code format edits
-- [ ] ["Funge-98 Final Specification"](https://github.com/catseye/Funge-98/blob/master/doc/funge98.markdown)
+- [ ] Befunge-98 (["Funge-98 Final Specification"](https://github.com/catseye/Funge-98/blob/master/doc/funge98.markdown))
   - [ ] operations
     - [x] `q` -- quit <exit code>
     - [x] `a`-`f`, `n` -- push 10..15 onto stack, clear all stacks

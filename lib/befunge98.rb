@@ -1,51 +1,49 @@
-STDOUT.sync = true
-
 def Befunge98 source, stdout = StringIO.new, stdin = STDIN
-  code = source.split ?\n
+  code = source.split(?\n).map(&:bytes)
 
   stacks = [stack = []]
   pop = ->{ stack.pop || 0 }
 
   ox = oy = 0
   dx, dy = 1, 0
-  px, py = -1, 0
+  x, y = -1, 0
   ds = [[0,1], [1,0], [0,-1], [-1,0]]
   go_west = ->{ dx, dy = *ds[3] }
   go_east = ->{ dx, dy = *ds[1] }
   go_north = ->{ dx, dy = *ds[2] }
   go_south = ->{ dx, dy = *ds[0] }
+  reflect = ->{ dy, dx = [-dy, -dx] }
   move = lambda do
     # TODO: Lahey-space wrapping
-    (py += dy; py %= code.    size) if dy != 0
-    (px += dx; px %= code[py].size) if dx != 0
+    (y += dy; y %= code.   size) if dy != 0
+    (x += dx; x %= code[y].size) if dx != 0
   end
 
-  stringmode = false
+  stringmode = jump_over = false
   iterate = 0
-  jump_over = false
 
+  get = ->{ (code[y + oy] || [])[x + ox] || 32 }
   loop do
     if iterate.zero?
       move[]
-      char = (code[py] || "")[px] || ?\s
+      char = get[]
     else
       iterate -= 1
     end
 
-    next if jump_over && char != ?;
+    next stack << char if stringmode && char.chr != ?"
+    next unless (33..126).include? char
+    next if jump_over && char.chr != ?;
+    case char.chr
+      when ?; ; jump_over ^= true
 
-    p [stack, char] if ENV["DEBUG"]
-    reflect = ->{ dy, dx = [-dy, -dx] }
-    next stack << char.ord if stringmode && char != ?"
-    next unless (32..126).include? char.ord
-    case char
       ### 93
       when ?" ; stringmode ^= true
-      when ?0..?9 ; stack << char.to_i
+      when ?0..?9 ; stack << char.chr.to_i
       when ?$ ; pop[]
       when ?: ; stack.concat [pop[]] * 2
       when ?\\ ; stack.concat [pop[], pop[]]
-      when ?# ; move[]
+      when ?# ; move[]  # "adds the delta to the position"
       when ?> ; go_east[]
       when ?< ; go_west[]
       when ?^ ; go_north[]
@@ -58,65 +56,47 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
       when ?% ; b, a = pop[], pop[]; stack << (b.zero? ? 0 : a % b)
       when ?| ; pop[].zero? ? go_south[] : go_north[]
       when ?_ ; pop[].zero? ? go_east[] : go_west[]
-      when ?~
-        if c = stdin.getc
-          stack << c.bytes.tap{ |_| _.size == 1 or fail }.first
-        else
-          reflect[]
-        end
+      when ?~ ; if c = stdin.getc then stack << c.ord else reflect[] end
       when ?&
-        catch nil do
-          begin
-            unless c = stdin.getc
-              reflect[]
-              throw nil
-            end
-          end until (?0..?9).include?(c)
-          while (
-            unless cc = stdin.getc
-              reflect[]
-              throw nil
-            end
-            (?0..?9).include? cc
-          )
-            c.concat cc
-          end
+        getc = ->{ stdin.getc or (reflect[]; throw) }
+        catch do
+          nil until (?0..?9).include?(c = getc[])
+          c << cc while (?0..?9).include?(cc = gets[])
           stack << c.to_i
         end
-      when ?, ; stdout.print pop[].chr            # ask about cells larger than byte
-      when ?. ; stdout.print ("%d " % pop[])
+      when ?, ; stdout.print pop[].chr
+      when ?. ; stdout.print "#{pop[]} "
       when ?! ; stack << (pop[].zero? ? 1 : 0)
       when ?` ; stack << (pop[]<pop[] ? 1 : 0)
+      ### Funge-98 Final Specification:
+      # A Funge-98 program should also be able to rely on the memory mechanism acting as
+      # if a cell contains blank space (ASCII 32) if it is unallocated, and setting memory
+      # to be full of blank space cells upon actual allocation (program load, or p instruction)
       when ?g
         y, x = pop[], pop[]
-        stack << ((code[oy + y] || "")[ox + x] || ?\s).ord
-        # https://github.com/catseye/Funge-98/blob/master/doc/funge98.markdown
-        # A Funge-98 program should also be able to rely on the memory mechanism acting as
-        # if a cell contains blank space (ASCII 32) if it is unallocated, and setting memory
-        # to be full of blank space cells upon actual allocation (program load, or p instruction)
+        stack << get[]
       when ?p
         y, x, v = pop[], pop[], pop[]
-        code[oy + y] = "" unless code[y]
-        code[oy + y][ox + x] = v.chr
+        code[oy + y] ||= []
+        code[oy + y][ox + x] = v
       when ?@ ; return Struct.new(:stdout, :stack, :exitcode).new(stdout, stack, 0)
+
       ### 98
       when ?q ; return Struct.new(:stdout, :stack, :exitcode).new(stdout, stack, pop[])
-      when ?a..?f ; stack << char.ord - ?a.ord + 10
+      when ?a..?f ; stack << char - ?a.ord + 10
       when ?n ; stack.clear
       when ?'
         move[]
-        stack << ((code[y] || "")[x] || ?\s).ord
+        stack << get[]
       when ?s
         move[]
-        code[py] = "" unless code[py]   # do we really need this?
-        code[py] = code[py].ljust px + 1
-        code[py][px] = pop[].chr
-      when ?; ; jump_over ^= true
-      when ?] ; dy, dx = ds[(ds.index([dy, dx]) + 1) % ds.size]
-      when ?[ ; dy, dx = ds[(ds.index([dy, dx]) - 1) % ds.size]
-      when ?w ; dy, dx = ds[(ds.index([dy, dx]) + (pop[] > pop[] ? -1 : 1)) % ds.size]
+        code[y + oy] ||= []
+        code[y + oy][x + ox] = pop[]
+      when ?[ ; dy, dx = ds[(ds.index([dy, dx]) - 1) % 4]
+      when ?] ; dy, dx = ds[(ds.index([dy, dx]) + 1) % 4]
+      when ?w ; dy, dx = ds[(ds.index([dy, dx]) + (pop[] > pop[] ? -1 : 1)) % 4]
       when ?r ; reflect[]
-      when ?x ; dy, dx = [pop[], pop[]] # ask if |delta|>1 is possible
+      when ?x ; dy, dx = [pop[], pop[]]
       when ?j
         if 0 < t = pop[]
           t.times{ move[] }
@@ -127,62 +107,67 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         end
       when ?k
         iterate = pop[]
-        begin
-          move[]
-          char = (code[py] || "")[px] || ?\s
-        end until char != ?\s || char != ?;
+        fail if char != 32 || char.chr != ?;
+        move[]
+        char = get[]
       when ?{
-        # stacks << toss = if 0 > n = pop[]
-        #   Array.new(-n, 0)
-        # else
-        #   Array.new(n){ pop[] }
-        # end
-        n = pop[]
-        toss = Array.new n unless toss = stack[stack.size-n..stack.size]
+        toss = if 0 > n = pop[]
+          stack.concat [0] * -n
+          []
+        else
+          stack.pop n
+        end
         stack << ox << oy
-        ox = px + dx
-        oy = py + dy
+        ox += x + dx
+        oy += y + dy
         stacks << stack = toss
       when ?{
         if 1 == stacks.size
           reflect[]
+        elsif 0 > n = pop[]
+          stacks.pop
+          stack = stacks.last
+          oy, ox = pop[], pop[]
+          stack.pop -n
         else
-          toss = stack
-          t = (0 < n = pop[]) ? stack.last(n) : []
-          stack = stacks.tap(&:pop).last
+          t = stack.pop n
+          stacks.pop
+          stack = stacks.last
           oy, ox = pop[], pop[]
           stack.concat t
         end
       when ?u
         if 1 == stacks.size
           reflect[]
-        elsif 0 < n = pop[]
-          n.times{ stack << stack[1].pop }
+        elsif 0 > n = pop[]
+          -n.times{ stack[-2] << pop[] }
         else
-          n.times{ stack[1] << pop[] }
+          n.times{ stack << stack[-2].pop }
         end
       when ?i
-        f = pop[]
-        y, x = pop[], pop[]
-        stack.push # ???
-      when ?o
+        fail "TODO"
         s = ""
-        until c = pop[].zero?
-          s.concat c.to_s
-        end
+        s << c.chr until (c = pop[]).zero?
         f = pop[]
-        y, x = pop[], pop[]
-        h, w = pop[], pop[]
+        va = [pop[], pop[]]
+        # ...
+      when ?o
+        fail "TODO"
+        s = ""
+        s << c.chr until (c = pop[]).zero?
+        f = pop[]
+        # y, x = pop[], pop[]
+        # h, w = pop[], pop[]
+        # ...
       when ?=
-        system "".tap{ |s|
-          until c = pop[].zero?
-            s.concat c.to_s
-          end
-        }, %i{ out err } => "/dev/null"
+        s = ""
+        s << c.chr until (c = pop[]).zero?
+        system s, out: File::NULL, err: File::NULL
         stack << $?.exitstatus
       when ?(, ?)
-        pop[].times.inject(0){ |i,| i*256 + pop[] }
-        reflect[]
+        fail "TODO"
+        # pop[].times.inject(0){ |i,| i * 256 + pop[] }
+        # reflect[]
       when ?y
         y = pop[]
         ss = stack.size
@@ -195,7 +180,7 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         stack << 2
         stack << 0
         stack << 0
-        stack << py << px
+        stack << y << x
         stack << dy << dx
         stack << oy << ox
         stack << [0, 0] # TODO: 1 vector containing the least point which contains a non-space cell, relative to the origin (env)
@@ -208,6 +193,7 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         stack.concat ARGV.map{ |_| _.chars.map(&:ord) + [0] } + [0]
         stack.concat ENV.map{ |k, v| "#{k}=#{v}".chars.map(&:ord) + [0] } + [0]
         stack << stack[1-y].tap{ stack = stack.take ss } if y > 0
+
     end
   end
 end
