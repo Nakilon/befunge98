@@ -121,6 +121,15 @@ describe "lib" do
         assert_equal 0, Befunge98(?@).exitcode
       end
 
+      it "n" do
+        assert_equal [], Befunge98("1n@", StringIO.new, StringIO.new).stack
+      end
+      it "'" do
+        assert_equal "'@".bytes, Befunge98("'''@@", StringIO.new, StringIO.new).stack
+      end
+      it "s with 1 and \"" do
+        assert_equal "@1s\1s\0".bytes, Befunge98("1ssss\"@").stack
+      end
       it "~" do
         assert_equal [2], Befunge98("~1@2", StringIO.new, StringIO.new).stack
         assert_equal [0, 10, 255, 0], Befunge98("~~~~@", StringIO.new,

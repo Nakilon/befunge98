@@ -22,7 +22,7 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
     bottom = code.rindex{ |l| !(l - [32, nil]).empty? }
     left  = code.map{ |l| l. index{ |c| c && c != 32 } }.compact.min
     right = code.map{ |l| l.rindex{ |c| c && c != 32 } }.compact.max
-    STDERR.puts [code, top..bottom, left..right, [y, x], [dy, dx]].inspect if ENV["DEBUG"]
+    STDERR.puts [top..bottom, left..right, [y, x], [dy, dx], code].inspect if ENV["DEBUG"]
     ty, tx = y, x
     next if loop do
       zy, zx = sy + oy + ty, sx + ox + tx
@@ -34,7 +34,8 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
     loop do
       STDERR.puts [ty, tx].inspect if ENV["DEBUG"]
       zy, zx = sy + oy + ty, sx + ox + tx
-      break unless (top..bottom).include?(zy) && (left..right).include?(zx)
+      break if dy > 0 && zy <  top || dy < 0 && zy > bottom ||
+               dx > 0 && zx < left || dx < 0 && zx > right
       y, x = ty, tx if code[zy] && code[zy][zx] && code[zy][zx] != 32
       ty, tx = ty - dy, tx - dx
     end
@@ -47,13 +48,13 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
   loop do
     if iterate.zero?
       move[]
-      char = get[]
     else
       iterate -= 1
     end
+    char = get[]
     STDERR.puts [[y, x], char.chr, stack].inspect if ENV["DEBUG"]
 
-    next stack << char if stringmode && char.chr != ?"
+    next stack << char if stringmode && char.chr != ?"  # TODO: "SGML-style"
     next unless (33..126).include? char
     next if jump_over && char.chr != ?;
     case char.chr
@@ -136,9 +137,9 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         end
       when ?k
         iterate = pop[]
-        fail if char != 32 || char.chr != ?;
         move[]
         char = get[]
+        fail if char == 32 || char == ?;.ord
       when ?{
         toss = if 0 > n = pop[]
           stack.concat [0] * -n
@@ -150,7 +151,7 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         ox += x + dx
         oy += y + dy
         stacks << stack = toss
-      when ?{
+      when ?}
         if 1 == stacks.size
           reflect[]
         elsif 0 > n = pop[]
