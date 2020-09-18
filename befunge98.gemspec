@@ -14,5 +14,5 @@ Gem::Specification.new do |spec|
   # spec.bindir       = "bin"
   # spec.executable   = "befunge98"
   spec.test_file    = "test.rb"
-  spec.files        = %w{ LICENSE befunge98.gemspec lib/befunge98.rb bin/befunge98.rb }
+  spec.files        = %w{ LICENSE befunge98.gemspec lib/befunge98.rb bin/befunge98 }
 end
