@@ -11,18 +11,8 @@ describe "lib" do
         assert_equal 0, Befunge98(?@).exitcode
       end
 
-      it ?" do
+      it '"' do
         assert_equal [?@.ord], Befunge98("\"@").stack
-      end
-      it ?~ do
-        assert_equal [0, 0x0a, 0xff], Befunge98("~~~@", StringIO.new,
-          StringIO.new.tap{ |s| "\x00\x0A\xFF".bytes.reverse_each &s.method(:ungetbyte) }
-        ).stack
-      end
-      it ?& do
-        assert_equal [12345, 0, 67890], Befunge98("&&&@", StringIO.new,
-          StringIO.new.tap{ |s| "-12345\n-0\0-67890\n".bytes.reverse_each &s.method(:ungetbyte) }
-        ).stack
       end
 
       describe "(rely on 0..9)" do
@@ -30,16 +20,16 @@ describe "lib" do
           assert_equal (0..9).to_a, Befunge98("0123456789@").stack
         end
 
-        it ?$ do
+        it "$" do
           assert_equal [1], Befunge98("$12$@").stack
         end
-        it ?: do
+        it ":" do
           assert_equal [0, 0, 1, 1], Befunge98(":1:@").stack
         end
-        it ?\ do
+        it "\\" do
           assert_equal [0, 1, 0], Befunge98("\\1\\@").stack
         end
-        it ?# do
+        it "#" do
           assert_equal [1], Befunge98('#@1#').stack
         end
         it "><^v" do
@@ -47,7 +37,7 @@ describe "lib" do
                                                "3v>\n"\
                                                "5425").stack
         end
-        it ?? do
+        it "?" do
           assert_equal [[1], [2], [3], [4]], 100.times.map{
             Befunge98("?1@2\n"\
                       "4555\n"\
@@ -55,16 +45,16 @@ describe "lib" do
                       "3555").stack
           }.uniq.sort
         end
-        it ?+ do
+        it "+" do
           assert_equal [90000], Befunge98("++"+"9+"*10000+"@").stack
         end
-        it ?- do
+        it "-" do
           assert_equal [-90000], Befunge98("--"+"9-"*10000+"@").stack
         end
-        it ?* do
+        it "*" do
           assert_equal [0, 2**31], Befunge98("**2*2"+"2*"*30+"@").stack
         end
-        it ?/ do
+        it "/" do
           assert_equal [0, 0, 1, 2], Befunge98("//12/22/21/@").stack
         end
         it "/ with -" do
@@ -89,53 +79,41 @@ describe "lib" do
                                          "   41_13@\n"\
                                          "   42_23@").stack
         end
-        it ?~ do  # expanded in 98
-          stdin = StringIO.new
-          assert_equal [2], Befunge98("~1@2", StringIO.new, stdin).stack
-          stdin.print [0, 10, 255, 0].pack "C*"
-          stdin.rewind
-          assert_equal [0, 10, 255, 0], Befunge98("~~~~@", StringIO.new, stdin).stack
-        end
-        it ?& do  # expanded in 98
-          stdin = StringIO.new
-          assert_equal [2], Befunge98("&1@2", StringIO.new, stdin).stack
-          [0, 10, 255].each do |c|
-            stdin.print [c, ?1.ord, ?2.ord, c, ?3.ord, ?4.ord, c].pack "C*"
-            stdin.rewind
-            assert_equal [12, 34], Befunge98("&&@", StringIO.new, stdin).stack
-          end
-        end
         describe "(rely on +)" do
           before do
             assert_equal [3], Befunge98("12+@").stack
           end
-          it ?, do
+          it "," do
             assert_equal "\x00\x0A\xFF\x00".b, Befunge98(",55+,5"+"5+"*50+",,@").stdout.string
           end
-          it ?. do
+          it "." do
             assert_equal "0 10 255 0 ",        Befunge98(".55+.5"+"5+"*50+"..@").stdout.string
           end
         end
-        it ?! do
+        it "!" do
           assert_equal [1, 1, 0, 0], Befunge98("!0!1!2!@").stack
         end
         it "! with -" do
           assert_equal [0, 0], Befunge98("1-!02-!@").stack
         end
-        it ?` do
+        it "`" do
           assert_equal [0, 0, 1], Befunge98("`01`10`@").stack
         end
       end
     end
 
     it "# test by @lifthrasiir" do
-      assert_equal "3 ", Befunge98("#;v           ; 1.@\n"\
-                                   "  ># ;2.@;3.@").stdout.string
+      assert_equal "3 ", Befunge98(
+      <<~HEREDOC
+        #;v           ; 1.@
+          ># ;2.@;3.@
+      HEREDOC
+      ).stdout.string
     end
   end
 
   describe "Befunge98 operations" do
-    it ?q do
+    it "q" do
       assert_equal 0, Befunge98(" q").exitcode
       assert_equal 1, Befunge98("1q").exitcode
     end
@@ -143,6 +121,21 @@ describe "lib" do
     describe "(rely on @)" do
       before do
         assert_equal 0, Befunge98(?@).exitcode
+      end
+
+      it "~" do
+        assert_equal [2], Befunge98("~1@2", StringIO.new, StringIO.new).stack
+        assert_equal [0, 10, 255, 0], Befunge98("~~~~@", StringIO.new,
+          StringIO.new.tap{ |s| [0, 10, 255, 0].reverse_each &s.method(:ungetbyte) }
+        ).stack
+      end
+      it "&" do
+        assert_equal [2], Befunge98("&1@2", StringIO.new, StringIO.new).stack
+        [?\0, ?\xa, ?\xff].each do |c|
+          assert_equal [12, 34], Befunge98("&&@", StringIO.new,
+            StringIO.new.tap{ |s| "#{c}-12#{c}-34#{c}".bytes.reverse_each &s.method(:ungetbyte) }
+          ).stack
+        end
       end
 
       describe "(rely on a..f)" do
