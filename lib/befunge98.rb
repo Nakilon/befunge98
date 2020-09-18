@@ -124,7 +124,7 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
         code[sy + oy + y][sx + ox + x] = pop[]
       when ?[ ; dy, dx = ds[(ds.index([dy, dx]) - 1) % 4]
       when ?] ; dy, dx = ds[(ds.index([dy, dx]) + 1) % 4]
-      when ?w ; dy, dx = ds[(ds.index([dy, dx]) + (pop[] > pop[] ? -1 : 1)) % 4]
+      when ?w ; dy, dx = ds[(ds.index([dy, dx]) - (pop[] <=> pop[])) % 4]
       when ?r ; reflect[]
       when ?x ; dy, dx = [pop[], pop[]]
       when ?j

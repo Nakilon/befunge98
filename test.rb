@@ -125,10 +125,22 @@ describe "lib" do
         assert_equal [], Befunge98("1n@", StringIO.new, StringIO.new).stack
       end
       it "'" do
-        assert_equal "'@".bytes, Befunge98("'''@@", StringIO.new, StringIO.new).stack
+        assert_equal "'@".bytes, Befunge98("'''@@").stack
       end
       it "s with 1 and \"" do
         assert_equal "@1s\1s\0".bytes, Befunge98("1ssss\"@").stack
+      end
+      it "w with 123, # and ." do
+        assert_equal "1 2 3 ", Befunge98( (
+        <<~HEREDOC
+          \#@w1.21\#@w3.@
+            @      2
+                   .
+                   1
+                   #
+                   @
+        HEREDOC
+        ), StringIO.new).stdout.string
       end
       it "~" do
         assert_equal [2], Befunge98("~1@2", StringIO.new, StringIO.new).stack

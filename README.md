@@ -29,7 +29,7 @@ So let it be the first one.
     - [x] Hello, World!
     - [ ] failures, ^C, hanging, etc.
   - [ ] operations
-    - [ ] Befunge-93
+    - [x] Befunge-93
       - [x] `@`
       - [x] `"`
       - [x] `0`..`9`
@@ -48,6 +48,7 @@ So let it be the first one.
       - [x] `n`
       - [x] `'`, `s`
       - [ ] `;`
+      - [x] `w`
       - [ ] `]`, `[`, `w`, `r`, `x`
       - [ ] `j`
       - [ ] `k`
