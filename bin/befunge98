@@ -6,4 +6,4 @@ end
 
   require_relative "../lib/befunge98"
 
-  exit Befunge98(File.read(ARGV.first), STDOUT).exitcode
+  exit Befunge98(ARGF.read, STDOUT).exitcode
