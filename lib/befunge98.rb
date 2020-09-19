@@ -18,25 +18,24 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
   move = lambda do
     y, x = y + dy, x + dx
     next if sy + oy + y >= 0 && code[sy + oy + y] && sx + ox + x >= 0 && code[sy + oy + y][sx + ox + x]
-    top    = code. index{ |l| !(l - [32, nil]).empty? }
-    bottom = code.rindex{ |l| !(l - [32, nil]).empty? }
+    top    = code. index{ |l| l.any?{ |i| i && i != 32 } }
+    bottom = code.rindex{ |l| l.any?{ |i| i && i != 32 } }
     left  = code.map{ |l| l && l. index{ |c| c && c != 32 } }.compact.min
     right = code.map{ |l| l && l.rindex{ |c| c && c != 32 } }.compact.max
     STDERR.puts [top..bottom, left..right, [y, x], [dy, dx], code].inspect if ENV["DEBUG"]
     ty, tx = y, x
     next if loop do
       zy, zx = sy + oy + ty, sx + ox + tx
-      break unless (top..bottom).include?(zy) && (left..right).include?(zx)
+      break unless top <= zy && zy <= bottom && left <= zx && zx <= right
       break true if code[zy] && code[zy][zx] && code[zy][zx] != 32
       ty, tx = ty + dy, tx + dx
     end
     ty, tx = y - dy, x - dx
     loop do
-      STDERR.puts [ty, tx].inspect if ENV["DEBUG"]
       zy, zx = sy + oy + ty, sx + ox + tx
       break if dy > 0 && zy <  top || dy < 0 && zy > bottom ||
                dx > 0 && zx < left || dx < 0 && zx > right
-      y, x = ty, tx if code[zy] && code[zy][zx] && code[zy][zx] != 32
+      y, x = ty, tx if code[zy] && code[zy][zx] && code[zy][zx] != 32   # TODO: should this execute if it's in a 'hole'?
       ty, tx = ty - dy, tx - dx
     end
   end
@@ -132,7 +131,7 @@ def Befunge98 source, stdout = StringIO.new, stdin = STDIN
           t.times{ move[] }
         else
           reflect[]
-          t.times{ move[] }
+          (-t).times{ move[] }
           reflect[]
         end
       when ?k

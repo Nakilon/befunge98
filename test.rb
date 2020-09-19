@@ -130,6 +130,12 @@ describe "lib" do
       it "s with 1 and \"" do
         assert_equal "@1s\1s\0".bytes, Befunge98("1ssss\"@").stack
       end
+      it "j" do
+        assert_equal [9], Befunge98("2j789@").stack
+      end
+      it "j with -" do
+        assert_equal [2, 3], Befunge98("6-j123@").stack
+      end
       it "w with 123, # and ." do
         assert_equal "1 2 3 ", Befunge98( (
         <<~HEREDOC
