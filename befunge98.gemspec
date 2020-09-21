@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name         = "befunge98"
-  spec.version      = "0.0.1"
+  spec.version      = "0.0.2"
   spec.summary      = "[WIP] Probably the first Befunge-98 interpreter in Ruby"
 
   spec.author       = "Victor Maslov aka Nakilon"

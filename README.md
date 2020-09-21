@@ -50,13 +50,13 @@ So let it be the first one.
       - [ ] `;`
       - [x] `w`
       - [ ] `]`, `[`, `w`, `r`, `x`
-      - [ ] `j`
+      - [x] `j`
       - [ ] `k`
       - [ ] `{`, `}`, `u`
       - [ ] `(`, `)`
       - [ ] `y`
       - [ ] ...
-- [x] travis
+- [ ] Github Actions test
 - [ ] gemify
 - [ ] announce
 
