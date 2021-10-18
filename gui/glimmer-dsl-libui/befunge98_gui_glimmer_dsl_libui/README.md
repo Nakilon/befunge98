@@ -1,27 +1,18 @@
-# Befunge98 GUI ([Glimmer DSL for SWT](https://github.com/AndyObtiva/glimmer-dsl-swt))
+# Befunge98 GUI ([Glimmer DSL for LibUI](https://github.com/AndyObtiva/glimmer-dsl-libui))
 
-![screenshot 1](/gui/glimmer-dsl-swt/befunge98_gui_glimmer_dsl_swt/screenshots/befunge98_gui_glimmer_dsl_swt_example.png)
+![screenshot 1](/gui/glimmer-dsl-libui/befunge98_gui_glimmer_dsl_libui/screenshots/befunge98_gui_glimmer_dsl_libui_example.png)
 
-![screenshot 2](/gui/glimmer-dsl-swt/befunge98_gui_glimmer_dsl_swt/screenshots/befunge98_gui_glimmer_dsl_swt_example_output.png)
-
-[You may download a packaged version for the Mac (Big Sur x64 and earlier) from here](https://www.dropbox.com/s/4kqnlfh1ei328hn/Befunge98%20GUI-1.0.0.dmg?dl=1)
-
-To run GUI from cloned project GUI directory (`gui/glimmer-dsl-swt/befunge98_gui_glimmer_dsl_swt`), first install gems via:
+To run GUI from cloned project GUI directory (`gui/glimmer-dsl-libui/befunge98_gui_glimmer_dsl_libui`), first install gems via:
 ```
 bundle
 ```
 
 Afterwards, run:
 ```
-glimmer run
+bin/befunge98_gui_glimmer_dsl_libui
 ```
 
-To package into a native executable ([learn more here](https://github.com/AndyObtiva/glimmer-dsl-swt/blob/master/docs/reference/GLIMMER_PACKAGING_AND_DISTRIBUTION.md)), run:
-```
-glimmer package
-```
-
-Contributing to befunge98_gui_glimmer_dsl_swt
+Contributing to befunge98_gui_glimmer_dsl_libui
 ------------------------------------------
 
 -   Check out the latest master to make sure the feature hasn't been

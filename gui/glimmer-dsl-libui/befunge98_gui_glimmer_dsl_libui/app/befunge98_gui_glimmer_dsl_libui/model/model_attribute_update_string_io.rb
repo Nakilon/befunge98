@@ -9,7 +9,10 @@ class Befunge98GuiGlimmerDslLibui
       end
     
       def print(string)
-        Glimmer::LibUI.queue_main { @model.send("#{@attribute}=", "#{@model.send(@attribute)}#{string}") }
+        Thread.new do
+          @model.send("#{@attribute}=", "#{@model.send(@attribute)}#{string}")
+        end
+        sleep(0.01) # yields to other threads
       end
     end
   end
