@@ -109,20 +109,11 @@ class Befunge98GuiGlimmerDslLibui
                         }
                         
                         on_mouse_down do |area_mouse_event|
-                          select_cell_background_path(@input_cell_background_paths[row][column])
+                          select_cell(row, column)
                         end
       
                         on_key_up do |area_key_event|
-                          if @input_cell_background_paths[row][column].fill == Glimmer::LibUI.interpret_color(:gray)
-                            @input_cell_strings[row][column].string = area_key_event[:key]
-                            @input_cell_strings[row].each_with_index do |cell, row_column|
-                              @input_cell_strings[row][row_column].string = ' ' if row_column < column && cell.string == ''
-                            end
-                            self.input_string = @input_cell_strings.map {|cell_row| cell_row.map(&:string).join}.join("\n")
-                            next_column = column == COLUMN_COUNT ? 0 : column + 1
-                            next_row = column == COLUMN_COUNT && row != ROW_COUNT ? row + 1 : row
-                            select_cell_background_path(@input_cell_background_paths[next_row][next_column])
-                          end
+                          mark_key(area_key_event)
                         end
                       }
                     }
@@ -138,10 +129,32 @@ class Befunge98GuiGlimmerDslLibui
         msg_box('About', "Befunge98 GUI (Glimmer DSL for SWT) #{VERSION}\n\n#{LICENSE}")
       end
       
-      def select_cell_background_path(cell_background_path)
+      def select_cell(row, column)
+        pd @selected_row = row
+        pd @selected_column = column
         @selected_cell_background_path&.fill = :white
-        @selected_cell_background_path = cell_background_path
+        @selected_cell_background_path = @input_cell_background_paths[row][column]
         @selected_cell_background_path.fill = :gray
+      end
+      
+      def mark_key(area_key_event)
+        row = @selected_row
+        column = @selected_column
+        pd area_key_event[:key_value]
+        case area_key_event[:key_value]
+        when 10 # new line
+          next_column = row != (ROW_COUNT - 1) ? 0 : column
+          next_row = row != (ROW_COUNT - 1) ? row + 1 : row
+        else
+          @input_cell_strings[row][column].string = area_key_event[:key]
+          @input_cell_strings[row].each_with_index do |cell, row_column|
+            @input_cell_strings[row][row_column].string = ' ' if row_column < column && cell.string == ''
+          end
+          self.input_string = @input_cell_strings.map {|cell_row| cell_row.map(&:string).join}.join("\n")
+          next_column = column == (COLUMN_COUNT - 1) ? (row == (ROW_COUNT - 1) ? column : 0) : column + 1
+          next_row = column == (COLUMN_COUNT - 1) && row != (ROW_COUNT - 1) ? row + 1 : row
+        end
+        select_cell(next_row, next_column)
       end
       
       def launch
